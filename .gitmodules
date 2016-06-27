@@ -1,0 +1,6 @@
+[submodule "ironic"]
+	path = ironic
+	url = https://github.com/openstack/ironic
+[submodule "requirements"]
+	path = requirements
+	url = https://github.com/openstack/requirements

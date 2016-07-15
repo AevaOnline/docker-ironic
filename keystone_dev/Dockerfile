@@ -1,12 +1,11 @@
-FROM ubuntu
+FROM python:2
 
 MAINTAINER Devananda van der Veen <devananda.vdv@gmail.com>
 
 # Install all system prerequisites
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        libssl-dev libffi-dev libxslt1-dev gettext sqlite supervisor \
-        python2.7 python-pip python-setuptools git && \
+        libssl-dev libffi-dev libxslt1-dev gettext sqlite supervisor && \
     apt-get -y autoremove && \
     apt-get clean
 

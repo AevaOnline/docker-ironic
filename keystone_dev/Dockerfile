@@ -6,7 +6,7 @@ MAINTAINER Devananda van der Veen <devananda.vdv@gmail.com>
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libssl-dev libffi-dev libxslt1-dev gettext sqlite supervisor \
-        python2.7 python-pip git && \
+        python2.7 python-pip python-setuptools git && \
     apt-get -y autoremove && \
     apt-get clean
 

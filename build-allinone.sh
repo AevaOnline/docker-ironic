@@ -15,5 +15,3 @@ mv dist/ironic-${VERSION}.tar.gz ../ironic.tar.gz
 popd
 
 docker build --rm -q -t ironic:latest -f allinone/Dockerfile .
-
-docker build --rm -q -t ironic:devel -f devel/Dockerfile .

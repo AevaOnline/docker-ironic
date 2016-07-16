@@ -1,11 +1,25 @@
-This repo contains the dockerfiles and related configs and scripts for building
-docker images for Ironic. 
+===================================
+Docker image for Ironic development
+===================================
 
-The "allinone" image builds a tarball release of a specific version of Ironic,
-bakes that into the docker image, and will publish that image for others to
-use.  It's an allinone minimal image, using 0mq and sqlite intead of rabbit and
-mysql.  Don't try to use this on more than one host.
+This reposotiry contains the dockerfile(s) and related scripts, configs, etc,
+for building a docker image usable for easy local development of Ironic.
 
-The "devel" image should mount your ironic source dir as a volume and allow
-live editing of the code (locally) while running everything in the container.
-It doesn't work yet :)
+Quick start
+-----------
+
+Run the ``init.sh`` script to initialize submodules.
+
+Run the ``build.sh`` script to build or refresh your docker image.  By default,
+the image be named "ironic:devel".
+
+Run the following command to start the container, mount in your working dir,
+and make the ports available locally::
+
+  docker run -it -p 6385:6385 -p 35357:35357 -v LOCAL_IRONIC_SOURCE_DIR:/opt/source/ironic ironic:devel bash
+  supervisord && supervisorctl
+
+Source the included ``openrc`` file to set your ENV vars and connect with your
+openstack client, or do development on python-ironicclient. You should be able
+to edit any files in your ironic source dir and simply restart services from
+within supervisorctl to pick up and test any changes.

@@ -1,0 +1,11 @@
+export IRONIC_URL=http://127.0.0.1:6385/ 
+export OS_AUTH_URL=http://127.0.0.1:35357/v3
+export IRONIC_API_VERSION=1.20
+export OS_IDENTITY_API_VERSION=3
+export OS_USERNAME=admin 
+export OS_PASSWORD=admin_pass 
+export OS_PROJECT_NAME=local
+export OS_DOMAIN=default
+export OS_USER_DOMAIN_ID=${OS_DOMAIN}
+export OS_PROJECT_DOMAIN_ID=${OS_DOMAIN}
+

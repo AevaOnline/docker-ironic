@@ -1,4 +1,4 @@
-FROM python:2
+FROM ubuntu
 
 MAINTAINER Devananda van der Veen <devananda.vdv@gmail.com>
 
@@ -8,9 +8,11 @@ EXPOSE 35357
 # Install all system prerequisites
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        libssl-dev libffi-dev libxslt1-dev gettext sqlite supervisor git && \
+        libssl-dev libffi-dev libxslt1-dev libzmq3-dev gettext sqlite supervisor git \
+        python2.7 python-setuptools python-dev python-pip python-zmq autoconf libtool pkg-config && \
     apt-get -y autoremove && \
-    apt-get clean
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create service user and relevant directories
 RUN useradd --user-group ironic && \
@@ -23,16 +25,10 @@ RUN useradd --user-group keystone && \
     chown -R keystone: /etc/keystone /var/log/keystone
 
 # Install necessary python packages from PIP
-RUN pip --no-cache-dir install -U pip zmq redis python-openstackclient python-ironicclient setuptools
+RUN pip install -U pip wheel setuptools redis zmq python-openstackclient python-ironicclient && \
+    rm -rf /root/.cache/pip
 
-#ADD requirements/upper-constraints.txt /opt/
-#COPY ironic.tar.gz /opt/ironic.tar.gz
-#COPY keystone.tar.gz /opt/keystone.tar.gz
-#RUN pip --no-cache-dir install -c /opt/upper-constraints.txt /opt/keystone.tar.gz /opt/ironic.tar.gz
-
-#COPY ironic /opt/source/ironic
-#COPY keystone /opt/source/keystone
-
+# Clone ironic and keystone & install in editable mode
 RUN mkdir /opt/source && cd /opt/source && \
     git clone --depth=1 https://github.com/openstack/ironic && \
     git clone --depth=1 https://github.com/openstack/keystone && \
@@ -40,17 +36,20 @@ RUN mkdir /opt/source && cd /opt/source && \
     cd /opt/source/keystone && pip install -e .
 
 # Copy config files
-ADD ironic/etc/ironic/* /etc/ironic/
-ADD config/ironic-dev.conf /etc/ironic/ironic.conf
+RUN cp -rp /opt/source/ironic/etc/ironic/* /etc/ironic/
+RUN cp -rp /opt/source/keystone/etc/* /etc/keystone/
+COPY config/ironic.conf /etc/ironic/ironic.conf
+COPY config/keystone.conf /etc/keystone/keystone.conf
+COPY config/supervisord.conf /etc/supervisord.conf
+COPY register.sh /etc/init.d/
 
-ADD keystone/etc/* /etc/keystone/
-ADD config/keystone.conf /etc/keystone/keystone.conf
-
+# Initialize databases
 RUN ironic-dbsync create_schema && \
     chown ironic:ironic /etc/ironic/ironic.sqlite && \
     keystone-manage db_sync && \
     chown keystone:keystone /etc/keystone/keystone.sqlite
 
+# Initialize keystone accounts
 RUN OS_BOOTSTRAP_USERNAME=admin \
     OS_BOOTSTRAP_PASSWORD=admin_pass \
     OS_BOOTSTRAP_PROJECT_NAME=local \
@@ -60,9 +59,5 @@ RUN OS_BOOTSTRAP_USERNAME=admin \
     OS_BOOTSTRAP_SERVICE_NAME=keystone \
     keystone-manage bootstrap
 
-COPY config/supervisord.conf /etc/supervisord.conf
-COPY register.sh /etc/init.d/
 
 #ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
-
-CMD /usr/bin/supervisord -c /etc/supervisord.conf

@@ -14,16 +14,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Create service user and relevant directories
-RUN useradd --user-group ironic && \
-    mkdir -p /etc/ironic /var/log/ironic /var/log/supervisord /tftpboot /httpboot && \
-    chown -R ironic: /etc/ironic /var/log/ironic /httpboot /tftpboot
-
-# Create service user and relevant directories
-RUN useradd --user-group keystone && \
-    mkdir -p /etc/keystone /var/log/keystone && \
-    chown -R keystone: /etc/keystone /var/log/keystone
-
 # Install necessary python packages from PIP
 RUN pip install -U pip wheel setuptools redis zmq python-openstackclient python-ironicclient && \
     rm -rf /root/.cache/pip
@@ -34,6 +24,21 @@ RUN mkdir /opt/source && cd /opt/source && \
     git clone --depth=1 https://github.com/openstack/keystone && \
     cd /opt/source/ironic && pip install -e . && \
     cd /opt/source/keystone && pip install -e .
+
+# Remove packages we won't need after the installation
+# Saves about
+RUN apt-get -y remove m4 make perl autotools-dev cpp cpp-5 gcc gcc-5 git-man && \
+    apt-get -y autoremove
+
+# Create service user and relevant directories
+RUN useradd --user-group ironic && \
+    mkdir -p /etc/ironic /var/log/ironic /var/log/supervisord /tftpboot /httpboot && \
+    chown -R ironic: /etc/ironic /var/log/ironic /httpboot /tftpboot
+
+# Create service user and relevant directories
+RUN useradd --user-group keystone && \
+    mkdir -p /etc/keystone /var/log/keystone && \
+    chown -R keystone: /etc/keystone /var/log/keystone
 
 # Copy config files
 RUN cp -rp /opt/source/ironic/etc/ironic/* /etc/ironic/

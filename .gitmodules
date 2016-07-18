@@ -1,9 +1,0 @@
-[submodule "ironic"]
-	path = ironic
-	url = https://github.com/openstack/ironic
-[submodule "requirements"]
-	path = requirements
-	url = https://github.com/openstack/requirements
-[submodule "keystone"]
-	path = keystone
-	url = https://github.com/openstack/keystone

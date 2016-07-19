@@ -58,7 +58,7 @@ RUN ironic-dbsync create_schema && \
 # Initialize keystone accounts
 RUN OS_BOOTSTRAP_USERNAME=admin \
     OS_BOOTSTRAP_PASSWORD=admin_pass \
-    OS_BOOTSTRAP_PROJECT_NAME=local \
+    OS_BOOTSTRAP_PROJECT_NAME=demo \
     OS_BOOTSTRAP_ADMIN_URL=http://127.0.0.1:35357/v3 \
     OS_BOOTSTRAP_PUBLIC_URL=http://127.0.0.1:35357/v3 \
     OS_BOOTSTRAP_INTERNAL_URL=http://127.0.0.1:35357/v3 \

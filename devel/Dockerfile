@@ -10,7 +10,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libssl-dev libffi-dev libxslt1-dev libzmq1 \
         redis-server gettext sqlite supervisor git autoconf libtool pkg-config \
-        python2.7 python-setuptools python-dev python-pip python-zmq python-redis && \
+        python2.7 python-setuptools python-dev python-pip python-zmq python-redis \
+        ipmitool amtterm dnsmasq nginx tftp-hpa tftpd-hpa syslinux syslinux-common ipxe pxelinux ssh && \
     apt-get -y autoremove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
